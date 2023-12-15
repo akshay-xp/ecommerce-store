@@ -7,7 +7,8 @@ import { useRouter } from "next/navigation"
 
 import Currency from "@/components/ui/currency"
 import IconButton from "@/components/ui/icon-button"
-// import usePreviewModal from "@/hooks/use-preview-modal";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog"
+import PreviewModal from "@/components/preview-modal"
 import useCart from "@/hooks/use-cart"
 import { Product } from "@/types"
 
@@ -16,18 +17,13 @@ interface ProductCard {
 }
 
 const ProductCard: React.FC<ProductCard> = ({ data }) => {
-  // const previewModal = usePreviewModal();
   const cart = useCart()
   const router = useRouter()
 
-  const handleClick = () => {
-    router.push(`/product/${data?.id}`)
-  }
-
-  const onPreview: MouseEventHandler<HTMLButtonElement> = (event) => {
-    event.stopPropagation()
-
-    // previewModal.onOpen(data);
+  const handleClick: MouseEventHandler<HTMLDivElement> = (event) => {
+    if (event.target === event.currentTarget) {
+      router.push(`/product/${data?.id}`)
+    }
   }
 
   const onAddToCart: MouseEventHandler<HTMLButtonElement> = (event) => {
@@ -51,10 +47,14 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
         />
         <div className="absolute bottom-5 w-full px-6 opacity-0 transition group-hover:opacity-100">
           <div className="flex justify-center gap-x-6">
-            <IconButton
-              onClick={onPreview}
-              icon={<Expand size={20} className="text-gray-600" />}
-            />
+            <Dialog>
+              <DialogTrigger asChild onSelect={(e) => e.preventDefault()}>
+                <IconButton
+                  icon={<Expand size={20} className="text-gray-600" />}
+                />
+              </DialogTrigger>
+              <PreviewModal product={data} />
+            </Dialog>
             <IconButton
               onClick={onAddToCart}
               icon={<ShoppingCart size={20} className="text-gray-600" />}
